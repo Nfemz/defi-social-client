@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getWalletInfo } from "./utils";
+import { getWalletInfo, WalletInfo } from "./utils";
 import { useCreateWallet } from "./useCreateWallet";
 
 export const useWallet = () => {
-  const [wallet, setWallet] = useState(null);
+  const [wallet, setWallet] = useState<WalletInfo | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const {

@@ -3,10 +3,11 @@ import { ReactNode, useState, MouseEvent, useRef, useEffect } from "react";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onOpen?: () => void;
   children: ReactNode;
 }
 
-export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, onOpen, children }: ModalProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
@@ -20,6 +21,13 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
       setIsDragging(false);
     }
   }, [isOpen]);
+
+  // Add new useEffect to handle onOpen
+  useEffect(() => {
+    if (isOpen && onOpen) {
+      onOpen();
+    }
+  }, [isOpen, onOpen]);
 
   if (!isOpen) return null;
 
@@ -39,15 +47,14 @@ export const Modal = ({ isOpen, onClose, children }: ModalProps) => {
 
   return (
     <div
-      className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50"
-      onClick={onClose}
-      onMouseMove={handleMouseMove}
+      className="fixed inset-0 backdrop-blur-[1px] flex items-center justify-center z-50"
+      onMouseMove={(e) => handleMouseMove(e)}
       onMouseUp={() => setIsDragging(false)}
       onMouseLeave={() => setIsDragging(false)}
     >
       <div
         ref={modalRef}
-        className="bg-white/90 backdrop-blur-sm rounded-lg p-6 max-w-lg w-full mx-4 relative shadow-xl ring-1 ring-black/5 border border-gray-200"
+        className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 relative shadow-xl ring-1 ring-black/5 border border-gray-200"
         onClick={(e) => e.stopPropagation()}
         style={{
           cursor: isDragging ? "grabbing" : "grab",

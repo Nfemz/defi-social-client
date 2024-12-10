@@ -6,6 +6,7 @@ import { useWallet } from "./features/wallet/useWallet";
 import { Button } from "./components/Button";
 import { useMemo, useState } from "react";
 import { Modal } from "./components/Modal";
+import { useWalletBalances } from "./features/wallet/useWalletBalances";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,8 @@ const HomeContent = () => {
     createWallet,
     disconnectWallet,
   } = useWallet();
+
+  const { fetchBalances, data: balances } = useWalletBalances();
 
   const openWallet = () => {
     setIsModalOpen(true);
@@ -60,8 +63,23 @@ const HomeContent = () => {
         </Button>
       )}
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <p>Hello World</p>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onOpen={() => fetchBalances()}
+      >
+        <p>Balances</p>
+        <div className="flex flex-col gap-2">
+          {balances &&
+            Object.entries(balances).map(([chain, balance]) => (
+              <div key={chain} className="flex justify-between items-center">
+                <span className="font-medium capitalize">
+                  {chain.toLowerCase()}
+                </span>
+                <span>{Number(balance).toFixed(6)}</span>
+              </div>
+            ))}
+        </div>
       </Modal>
     </div>
   );
